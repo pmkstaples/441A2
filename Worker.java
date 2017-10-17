@@ -17,7 +17,7 @@ public class Worker implements Runnable{
      */
     
     public Worker(Socket in){
-	conn = in;
+    	conn = in;
     }
 
     /* Default run method, uses the Socket conn to receive, parse and reply to probably formed HTTP GET
@@ -27,13 +27,13 @@ public class Worker implements Runnable{
     
     public void run(){
 
-	System.out.println("Worker is running");
+    System.out.println("Worker is running");
 	
-       	try{
-	    conn.close();
-	}
-	catch(Exception e){
-	}
+    	try{
+    		conn.close();
+    	}
+    	catch(Exception e){
+    	}
     }
 
 
