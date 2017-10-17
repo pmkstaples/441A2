@@ -47,10 +47,6 @@ public class WebServer extends Thread {
     	try{
     		socket = new ServerSocket(servPort);
     		socket.setSoTimeout(1000);
-    		System.out.println("Serv port is: " + socket.getLocalPort());
-    		InetAddress temp = socket.getInetAddress();
-    		System.out.println("Serv address is: " + temp.getHostName());
-	    	System.out.println("Serv name is: " + temp.getCanonicalHostName());
     	}
     	catch(Exception e){
     		System.out.println("Exception thrown: " + e.getMessage());
@@ -116,6 +112,7 @@ public class WebServer extends Thread {
 	System.out.println();
 	System.out.println("shutting down the server...");
 	server.shutdown();
+	keyboard.close();
 	System.out.println("server stopped");
     }
 }
