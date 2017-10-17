@@ -10,7 +10,9 @@ public class Worker implements Runnable{
     Socket conn;
 
     /* Default constructor, creates the connection to parse
+     * 
      * @param {Socket} in  A socket with which to send and receive from
+     * 
      * @author Paul Staples paul.staples@ucalgary.ca
      */
     
