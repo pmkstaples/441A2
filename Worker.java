@@ -3,19 +3,16 @@
  * Worker class
  */
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class Worker implements Runnable{
 
-	private static String SERVER_NAME = "PMKServer";
+    private static String SERVER_NAME = "PMKServer";
 		
     private Socket conn;
     private BufferedReader input;
-    private PrintWriter output;
+    private DataOutputStream output;
     private String request = "";
     private String response = "";
     private String[] parser;
@@ -31,43 +28,45 @@ public class Worker implements Runnable{
     public Worker(Socket in){
     	conn = in;
     	try {
-			input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			output = new PrintWriter(conn.getOutputStream());
-		} catch (IOException e) {
-			System.out.println("Error: " + e.getMessage());
-		}
+	    input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+	    output = new DataOutputStream(conn.getOutputStream());
+	}
+	catch (IOException e) {
+	    System.out.println("Error: " + e.getMessage());
+	}
     }
-
+    
     /* Default run method, uses the Socket conn to receive, parse and reply to properly formed HTTP GET
      * requests. 
      * @author Paul Staples paul.staples@ucalgary.ca
      */
     
-	public void run(){
+    public void run(){
 
-		System.out.println("Worker is running");
+	System.out.println("Worker is running");
 	
     	try{
-    		request = input.readLine();
-    		
-    		parser = request.split(" ");
-    		
-    		if(parser.length != 3 || !parser[0].equals("GET") || 
-    				!(parser[2].equals("HTTP/1.1") && parser[2].equals("HTTP/1.0"))){
-    			response = "HTTP/1.1 400 Bad Request\r\n"  + "Date: \r\n" + "Server: " + SERVER_NAME + "\r\n" + "Connection: close\r\n" + "\r\n\r\n";;
-    			System.out.println(response);
-    			output.write(response);
-    			output.flush();
-    			output.close();
-    			input.close();
-    		}
-    		
-    		conn.close();
+	    request = input.readLine();
+	    
+	    parser = request.split(" ");
+	    System.out.println(parser[0]);
+	    System.out.println(parser[1]);
+	    System.out.println(parser[2]);
+	    
+	    if(parser.length != 3 || !parser[0].equals("GET") || 
+	       !(parser[2].equals("HTTP/1.1") || parser[2].equals("HTTP/1.0"))){
+		response = "HTTP/1.1 400 Bad Request\r\n"  + "Date: \r\n" + "Server: " + SERVER_NAME + "\r\n" + "Connection: close\r\n" + "\r\n\r\n";;
+		
+		output.writeBytes(response);
+		output.flush();
+		output.close();
+		input.close();
+	    }
+	    
+	    conn.close();
     	}
     	catch(Exception e){
-    		System.out.println("Error: " + e.getMessage());
+	    System.out.println("Error: " + e.getMessage());
     	}
     }
-
-
 }
