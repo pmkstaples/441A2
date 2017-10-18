@@ -4,6 +4,7 @@
  */
 
 import java.io.*;
+import java.nio.file.*;
 import java.net.Socket;
 
 public class Worker implements Runnable{
@@ -16,6 +17,7 @@ public class Worker implements Runnable{
     private String request = "";
     private String response = "";
     private String[] parser;
+    private Files file = null;
     
   /* Default constructor, creates the connection to parse out, as well
      * as setting up input and output streams.
@@ -49,9 +51,6 @@ public class Worker implements Runnable{
 	    request = input.readLine();
 	    
 	    parser = request.split(" ");
-	    System.out.println(parser[0]);
-	    System.out.println(parser[1]);
-	    System.out.println(parser[2]);
 	    
 	    if(parser.length != 3 || !parser[0].equals("GET") || 
 	       !(parser[2].equals("HTTP/1.1") || parser[2].equals("HTTP/1.0"))){
@@ -61,6 +60,21 @@ public class Worker implements Runnable{
 		output.flush();
 		output.close();
 		input.close();
+	    }
+	    else{
+		response = "HTTP/1.1 200 OK\r\n" +
+		    "Date: \r\n" +
+		    "Server: " + SERVER_NAME + "\r\rn" +
+		    "Content-Length: \r\n" +
+		    "Content-Type: \r\n" +
+		    "Connection: close\r\n" +
+		    "\r\n\r\n";
+
+		Path path = Paths.get(parser[1]);
+		if(file.exists(path))
+		    System.out.println("File exists");
+		System.out.println("Got past path setup");
+		//	byte[] array = file.readAllBytes(path);
 	    }
 	    
 	    conn.close();
