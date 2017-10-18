@@ -50,6 +50,7 @@ public class WebServer extends Thread {
     	}
     	catch(Exception e){
     		System.out.println("Exception thrown: " + e.getMessage());
+    		System.exit(0);
     	}
 	
     	while(!listen){
@@ -61,6 +62,7 @@ public class WebServer extends Thread {
     			System.out.println("past worker execute");
     		}
     		catch(Exception e){
+    			exec.shutdownNow();
     		}
     	}
     }
@@ -77,6 +79,7 @@ public class WebServer extends Thread {
     		exec.shutdown();
     	}
     	catch(Exception e){
+    		exec.shutdownNow();
     	}
     }
     
@@ -85,7 +88,7 @@ public class WebServer extends Thread {
      * A simple driver.
      */
     public static void main(String[] args) {
-    	int serverPort = 2225;
+    	int serverPort = 5225;
 	
     	// parse command line args
     	if (args.length == 1) {
