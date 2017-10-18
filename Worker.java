@@ -4,9 +4,9 @@
  */
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Worker implements Runnable{
@@ -15,7 +15,7 @@ public class Worker implements Runnable{
 		
     private Socket conn;
     private BufferedReader input;
-    private DataOutputStream output;
+    private PrintWriter output;
     private String request = "";
     private String response = "";
     private String[] parser;
@@ -32,7 +32,7 @@ public class Worker implements Runnable{
     	conn = in;
     	try {
 			input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			output = new DataOutputStream(conn.getOutputStream());
+			output = new PrintWriter(conn.getOutputStream());
 		} catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
 		}
@@ -54,14 +54,18 @@ public class Worker implements Runnable{
     		
     		if(parser.length != 3 || !parser[0].equals("GET") || 
     				!(parser[2].equals("HTTP/1.1") && parser[2].equals("HTTP/1.0"))){
-    			response = "HTTP/1.1 400 Bad Request\r\n"  + "Date: \r\n" + "Server: " + SERVER_NAME + "Connection: close\r\n" + "\r\n\r\n";;
+    			response = "HTTP/1.1 400 Bad Request\r\n"  + "Date: \r\n" + "Server: " + SERVER_NAME + "\r\n" + "Connection: close\r\n" + "\r\n\r\n";;
     			System.out.println(response);
-    			output.writeChars(response);
+    			output.write(response);
+    			output.flush();
+    			output.close();
+    			input.close();
     		}
     		
     		conn.close();
     	}
     	catch(Exception e){
+    		System.out.println("Error: " + e.getMessage());
     	}
     }
 
