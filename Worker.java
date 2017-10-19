@@ -44,17 +44,19 @@ public class Worker implements Runnable{
      */
     
     public void run(){
-
+	
 	System.out.println("Worker is running");
 	
     	try{
 	    request = input.readLine();
-	    
 	    parser = request.split(" ");
 	    
 	    if(parser.length != 3 || !parser[0].equals("GET") || 
 	       !(parser[2].equals("HTTP/1.1") || parser[2].equals("HTTP/1.0"))){
-		response = "HTTP/1.1 400 Bad Request\r\n"  + "Date: \r\n" + "Server: " + SERVER_NAME + "\r\n" + "Connection: close\r\n" + "\r\n\r\n";;
+		response = "HTTP/1.1 400 Bad Request\r\n"  +
+		    "Date: \r\n" + "Server: " + SERVER_NAME + "\r\n" +
+		    "Connection: close\r\n" +
+		    "\r\n\r\n";;
 		
 		output.writeBytes(response);
 		output.flush();
@@ -62,25 +64,48 @@ public class Worker implements Runnable{
 		input.close();
 	    }
 	    else{
-		response = "HTTP/1.1 200 OK\r\n" +
-		    "Date: \r\n" +
-		    "Server: " + SERVER_NAME + "\r\rn" +
-		    "Content-Length: \r\n" +
-		    "Content-Type: \r\n" +
-		    "Connection: close\r\n" +
-		    "\r\n\r\n";
-
+		
 		Path path = Paths.get(parser[1]);
-		if(file.exists(path))
-		    System.out.println("File exists");
-		System.out.println("Got past path setup");
-		//	byte[] array = file.readAllBytes(path);
+		
+		if(!file.exists(path)){
+		    response = "HTTP/1.1 404 Bad File Not Found\r\n"  +
+			"Date: \r\n" +
+			"Server: " + SERVER_NAME + "\r\n" +
+			"Connection: close\r\n" +
+			"\r\n\r\n";;
+		    
+		    output.writeBytes(response);
+		    output.flush();
+		    output.close();
+		    input.close();
+		}
+		else{
+		    
+		    response = "HTTP/1.1 200 OK\r\n" +
+			"Date: \r\n" +
+			"Server: " + SERVER_NAME + "\r\n" +
+			"Content-Length: \r\n" +
+			"Content-Type: \r\n" +
+			"Connection: close\r\n" +
+			"\r\n\r\n";
+
+		    byte[] one = response.getBytes();
+		    byte[] two = file.readAllBytes(path);
+		    byte[] outputBytes = new byte[one.length + two.length];
+
+		    System.arraycopy(one, 0, outputBytes, 0, one.length);
+		    System.arraycopy(two, 0, outputBytes, one.length, two.length);
+		    
+		    output.write(outputBytes);
+		    output.flush();
+		    output.close();
+		    input.close();
+        	}
 	    }
-	    
 	    conn.close();
-    	}
-    	catch(Exception e){
+	}
+	catch(Exception e){
 	    System.out.println("Error: " + e.getMessage());
-    	}
+	}
     }
 }
