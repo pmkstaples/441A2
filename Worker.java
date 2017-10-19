@@ -95,7 +95,6 @@ public class Worker implements Runnable{
 		}
 		else{
 
-		    
 		    FileTime fTime = Files.getLastModifiedTime(path);
 		    long time = fTime.to(TimeUnit.MILLISECONDS);
 		    Date d = new Date(time);
@@ -118,8 +117,7 @@ public class Worker implements Runnable{
 
 		    System.arraycopy(one, 0, outputBytes, 0, one.length);
 		    System.arraycopy(two, 0, outputBytes, one.length, two.length);
-		    
-		    
+		     
 		    output.write(outputBytes);
 		    output.flush();
 		    output.close();
