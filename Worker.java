@@ -72,11 +72,11 @@ public class Worker implements Runnable{
 	    }
 	    else{
 		
-	    StringBuilder sb = new StringBuilder(parser[1]);
-	    if(sb.charAt(0) == '/')
-		sb.deleteCharAt(0);
-	    String tmp = sb.toString();
-	    Path path = Paths.get(tmp);
+		StringBuilder sb = new StringBuilder(parser[1]);
+		if(sb.charAt(0) == '/')
+		    sb.deleteCharAt(0);
+		String tmp = sb.toString();
+		Path path = Paths.get(tmp);
 		
 		if(!Files.exists(path)){
 
