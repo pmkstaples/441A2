@@ -6,6 +6,7 @@
 import java.io.*;
 import java.nio.file.*;
 import java.net.Socket;
+import java.lang.StringBuilder;
 
 public class Worker implements Runnable{
 
@@ -17,7 +18,8 @@ public class Worker implements Runnable{
     private String request = "";
     private String response = "";
     private String[] parser;
-    private Files file = null;
+    @SuppressWarnings("unused")
+	private Files file = null;
     
   /* Default constructor, creates the connection to parse out, as well
      * as setting up input and output streams.
@@ -56,7 +58,7 @@ public class Worker implements Runnable{
 		response = "HTTP/1.1 400 Bad Request\r\n"  +
 		    "Date: \r\n" + "Server: " + SERVER_NAME + "\r\n" +
 		    "Connection: close\r\n" +
-		    "\r\n\r\n";;
+		    "\r\n";;
 		
 		output.writeBytes(response);
 		output.flush();
@@ -65,14 +67,18 @@ public class Worker implements Runnable{
 	    }
 	    else{
 		
-		Path path = Paths.get(parser[1]);
+	    StringBuilder sb = new StringBuilder(parser[1]);
+	    sb.deleteCharAt(0);
+	    String tmp = sb.toString();
+	//    System.out.println(tmp);
+		Path path = Paths.get(tmp);
 		
-		if(!file.exists(path)){
+		if(!Files.exists(path)){
 		    response = "HTTP/1.1 404 Bad File Not Found\r\n"  +
 			"Date: \r\n" +
 			"Server: " + SERVER_NAME + "\r\n" +
 			"Connection: close\r\n" +
-			"\r\n\r\n";;
+			"\r\n";;
 		    
 		    output.writeBytes(response);
 		    output.flush();
@@ -87,10 +93,10 @@ public class Worker implements Runnable{
 			"Content-Length: \r\n" +
 			"Content-Type: \r\n" +
 			"Connection: close\r\n" +
-			"\r\n\r\n";
+			"\r\n";
 
 		    byte[] one = response.getBytes();
-		    byte[] two = file.readAllBytes(path);
+		    byte[] two = Files.readAllBytes(path);
 		    byte[] outputBytes = new byte[one.length + two.length];
 
 		    System.arraycopy(one, 0, outputBytes, 0, one.length);
