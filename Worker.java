@@ -3,6 +3,13 @@
  * Worker class
  */
 
+/* Known issues: 
+ * -Does not check for all proper header files, JUST
+ *  focuses on the GET request.
+ * -When closing a web browser that has connected to the server, the server
+ *  takes a few moments to time out with Error: null
+ */
+
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
