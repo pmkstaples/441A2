@@ -14,7 +14,7 @@ import java.util.Date;
 public class Worker implements Runnable{
 
     private static String SERVER_NAME = "PMKServer";
-		
+    
     private Socket conn;
     private BufferedReader input;
     private DataOutputStream output;
@@ -22,7 +22,7 @@ public class Worker implements Runnable{
     private String response = "";
     private String[] parser;
     
-  /* Default constructor, creates the connection to parse out, as well
+    /* Default constructor, creates the connection to parse out, as well
      * as setting up input and output streams.
      * 
      * @param {Socket} in  A socket with which to send and receive from.
@@ -49,7 +49,7 @@ public class Worker implements Runnable{
     public void run(){
 	
 	System.out.println("Connection Thread Opened");
-
+	
     	try{
 	    request = input.readLine();
 	    parser = request.split(" ");
@@ -60,7 +60,7 @@ public class Worker implements Runnable{
 	    
 	    if(parser.length != 3 || !parser[0].equals("GET") || 
 	       !(parser[2].equals("HTTP/1.1") || parser[2].equals("HTTP/1.0"))){
-
+		
 		Date d = new Date();
 		
 		response = "HTTP/1.1 400 Bad Request\r\n"  +
@@ -74,9 +74,9 @@ public class Worker implements Runnable{
 		output.close();
 		input.close();
 	    }
-
+	    
 	    else{
-
+		
 		/* Needed to do something with the object name given by the GET request
 		 * as it was not working with the beginning '/' using TELNET. Quick 
 		 * removal of this character if it exists before converting to a
@@ -88,8 +88,8 @@ public class Worker implements Runnable{
 		    sb.deleteCharAt(0);
 		String tmp = sb.toString();
 		Path path = Paths.get(tmp);
-
-
+		
+		
 		/* Checks to see if the file actually exists, otherwise writes out
 		 * a proper 404 Not Found response
 		 */
@@ -110,7 +110,7 @@ public class Worker implements Runnable{
 		    input.close();
 		}
 		else{
-
+		    
 		    /* Because I used nio.file.Files instead of File, getting the last modified
 		     * required a few additional steps, named a FileTime object into an actual long
 		     */
@@ -131,13 +131,13 @@ public class Worker implements Runnable{
 			"Content-Type: " + type + "\r\n" +
 			"Connection: close\r\n" +
 			"\r\n";
-
+		    
 		    byte[] one = response.getBytes();
 		    byte[] outputBytes = new byte[one.length + two.length];
-
+		    
 		    System.arraycopy(one, 0, outputBytes, 0, one.length);
 		    System.arraycopy(two, 0, outputBytes, one.length, two.length);
-		     
+		    
 		    output.write(outputBytes);
 		    output.flush();
 		    output.close();
@@ -154,7 +154,6 @@ public class Worker implements Runnable{
 	    catch(Exception m){
 	    }
 	}
-	
     }
 }
-	
+
