@@ -48,11 +48,15 @@ public class Worker implements Runnable{
     
     public void run(){
 	
-	System.out.println("Worker is running");
-	
+	System.out.println("Connection Thread Opened");
+
     	try{
 	    request = input.readLine();
 	    parser = request.split(" ");
+	    /* Breaks the string up based on whitespace, checking if it's a properly formed
+	     * GET based on there being 3 parts, the GET, object, and protocol version.
+	     * Outputs a properly formed HTTP response with correct code.
+	     */
 	    
 	    if(parser.length != 3 || !parser[0].equals("GET") || 
 	       !(parser[2].equals("HTTP/1.1") || parser[2].equals("HTTP/1.0"))){
@@ -70,13 +74,25 @@ public class Worker implements Runnable{
 		output.close();
 		input.close();
 	    }
+
 	    else{
+
+		/* Needed to do something with the object name given by the GET request
+		 * as it was not working with the beginning '/' using TELNET. Quick 
+		 * removal of this character if it exists before converting to a
+		 * proper Path
+		 */
 		
 		StringBuilder sb = new StringBuilder(parser[1]);
 		if(sb.charAt(0) == '/')
 		    sb.deleteCharAt(0);
 		String tmp = sb.toString();
 		Path path = Paths.get(tmp);
+
+
+		/* Checks to see if the file actually exists, otherwise writes out
+		 * a proper 404 Not Found response
+		 */
 		
 		if(!Files.exists(path)){
 
@@ -95,6 +111,10 @@ public class Worker implements Runnable{
 		}
 		else{
 
+		    /* Because I used nio.file.Files instead of File, getting the last modified
+		     * required a few additional steps, named a FileTime object into an actual long
+		     */
+		    
 		    FileTime fTime = Files.getLastModifiedTime(path);
 		    long time = fTime.to(TimeUnit.MILLISECONDS);
 		    Date d = new Date(time);
@@ -128,6 +148,13 @@ public class Worker implements Runnable{
 	}
 	catch(Exception e){
 	    System.out.println("Error: " + e.getMessage());
+	    try{
+		conn.close();
+	    }
+	    catch(Exception m){
+	    }
 	}
+	
     }
 }
+	

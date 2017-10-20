@@ -56,10 +56,8 @@ public class WebServer extends Thread {
     	while(!listen){
     		try{
     			incoming = socket.accept();
-    			//	incoming = new Socket("people.ucalgary.ca", 80);
     			Worker work = new Worker(incoming);
     			exec.execute(work);
-    			System.out.println("past worker execute");
     		}
     		catch(Exception e){
     		}
@@ -75,7 +73,7 @@ public class WebServer extends Thread {
     	listen = true;
     	try{
     		socket.close();
-    		exec.shutdown();
+    		exec.shutdownNow();
     	}
     	catch(Exception e){
     		exec.shutdownNow();
@@ -87,7 +85,7 @@ public class WebServer extends Thread {
      * A simple driver.
      */
     public static void main(String[] args) {
-    	int serverPort = 6225;
+    	int serverPort = 2225;
 	
     	// parse command line args
     	if (args.length == 1) {
